@@ -1,0 +1,1 @@
+This is basically a repo of coding exercises.  I am trying new things.  I would love feedback positive or negative as I am constantly trying to improve and learn new things!  Thanks for taking a look at this.
