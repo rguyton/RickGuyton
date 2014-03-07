@@ -1,6 +1,7 @@
 package rickguyton.examples.MadLibs;
 
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -11,13 +12,39 @@ public class MadLib {
 	private String sentence;  //The before of the madlib that includes the text to ask the player.
 	private HashMap<String, String> response = new HashMap<String, String>();  //map questions, to answers.
 	private StringBuffer madLib = new StringBuffer();  //final result the actual madlib with the player responses replaced from the questions in the sentence.
+	private InputStream in;
+	private PrintStream out;
 	
 	MadLib(String sentence){
 		this.sentence = sentence;
 	}
 	
 	MadLib(){
+		System.setIn(System.in);
+		System.setOut(System.out);
+	}
+	
+	MadLib(InputStream in){
+		this.in = in;
+		System.setIn(in);
+	}
+	
+	MadLib(InputStream in, PrintStream out){
+		this.in = in;
+		System.setIn(in);
+	
+		this.out = out;
+		System.setOut(out);
+	}
+	
+	MadLib(InputStream in, PrintStream out, String sentence){
+		this.in = in;
+		System.setIn(in);
 		
+		this.out = out;
+		System.setOut(out);
+		
+		this.sentence = sentence;
 	}
 	
 	/**
@@ -28,7 +55,7 @@ public class MadLib {
 	 * Output: I like turtles!
 	 * @param sentence
 	 */
-	public void parseSentence(String sentence){
+	public StringBuffer parseSentence(String sentence){
 		
 		//Pattern pattern = Pattern.compile("\\({2}([a-zA-Z0-9: ]+)\\){2}");
 		Pattern pattern = Pattern.compile("\\(\\((.*?)\\)\\)");
@@ -40,7 +67,8 @@ public class MadLib {
 		}
 
 		matcher.appendTail(madLib);
-		System.out.println(getMadLib());
+		//System.out.println(getMadLib());
+		return getMadLib();
 	}
 	
 	/**
@@ -49,49 +77,13 @@ public class MadLib {
 	 * The function actually maps the answer twice.  Once for [((gem:a gemstone)), answer] and once for [((gem)), answer]. 
 	 * @param question
 	 */
-	public void askQuestion(String question){
+	public void askQuestion(String question) throws StringIndexOutOfBoundsException, ArrayIndexOutOfBoundsException {
 		Scanner in = new Scanner(System.in);
 		
-		try{
 		String stripped = question.substring(2, question.length() -2); //strip (( )) from text.
 		
 		if(stripped.contains(":")){
 			
-				String[] split = stripped.split(":");
-				//should have 2 segments
-				String key = split[0];  //first segment is the reference to be used later.
-	
-				System.out.println("Please provide " +split[1]);
-				String answer = in.nextLine();
-				response.put("(("+ key +"))", answer);
-				response.put(question, answer);
-			}else{
-				if(response.containsKey(question)){
-					//skip because this is a reference to previous item
-				}else{
-					System.out.println("Please provide " +stripped);
-					response.put(question, in.nextLine());
-				}
-			}
-		}catch (Exception e){
-			System.err.println("Poorly formatted MadLib Question.");
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-	
-	/**T
-	 * This function will ask the user a question and record the input into a response map. Using an input stream for testing purposes.
-	 * @param question
-	 */
-	public void askQuestion(String question, InputStream inputStream) throws StringIndexOutOfBoundsException, ArrayIndexOutOfBoundsException{
-		System.setIn(inputStream);
-		Scanner in = new Scanner(System.in);
-		
-		String stripped = question.substring(2, question.length() -2); //strip (( )) from text.
-	
-		if(stripped.contains(":")){
-		
 			String[] split = stripped.split(":");
 			//should have 2 segments
 			String key = split[0];  //first segment is the reference to be used later.
@@ -108,9 +100,10 @@ public class MadLib {
 				response.put(question, in.nextLine());
 			}
 		}
-		
+
 		in.close();
 	}
+	
 	
 	/**
 	 * Mainly used for testing.  This will create a madlib based on the sentence and response map you provide.
