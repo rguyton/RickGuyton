@@ -99,8 +99,8 @@ public class MadLibUnitTest {
 		
 		ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
 		
-		MadLib test = new MadLib();
-		test.askQuestion(question, in);
+		MadLib test = new MadLib(in);
+		test.askQuestion(question);
 		
 		assertEquals(response, test.getResponses());
 	}
@@ -117,29 +117,41 @@ public class MadLibUnitTest {
 		
 		ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
 		
-		MadLib test = new MadLib();
-		test.askQuestion(question, in);
+		MadLib test = new MadLib(in);
+		test.askQuestion(question);
 		
 		assertEquals(response, test.getResponses());
+	}
+	
+	@Test
+	public void testParseSentence(){
+		String sentence = "I want to work for ((a business))!";
+		String input = "Asynchrony";
+		String expected = "I want to work for Asynchrony!";
+		
+		ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
+		MadLib test = new MadLib(in);
+			
+		assertEquals(expected, test.parseSentence(sentence).toString());
 	}
 	
 	@Test(expected= ArrayIndexOutOfBoundsException.class)
 	public void testAskBadQuestion(){
 		String question = "((test:))";
-		String input = "test";
+		String input = "test\n";
 		ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
 		
-		MadLib test = new MadLib();
-		test.askQuestion(question, in);	
+		MadLib test = new MadLib(in);
+		test.askQuestion(question);	
 	}
-	
+
 	@Test (expected= StringIndexOutOfBoundsException.class)
 	public void testAskEmptyQuestion(){
 		String question = "";
-		String input = "test";
+		String input = "test\n";
 		ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
 		
-		MadLib test = new MadLib();
-		test.askQuestion(question, in);	
+		MadLib test = new MadLib(in);
+		test.askQuestion(question);	
 	}
 }
